@@ -5,7 +5,18 @@ const ROOT="avatars";
 const gallery=document.getElementById("gallery");
 const back=document.getElementById("back");
 
-let currentPath=ROOT;
+let currentPath = ROOT;
+
+function getPathFromHash() {
+    const hash = decodeURIComponent(location.hash.slice(1));
+    if (!hash) return ROOT;
+
+    const path = hash.startsWith(ROOT + "/") || hash === ROOT
+        ? hash
+        : ROOT + "/" + hash;
+
+    return path;
+}
 let history = [];
 
 let currentImages = [];
@@ -190,4 +201,12 @@ function updateBreadcrumb(path){
 
 
 // lance la galerie
-loadFolder(ROOT);
+async function openPathFromHash() {
+    const path = getPathFromHash();
+    currentPath = path;
+    history = [];
+    await loadFolder(path);
+}
+
+window.addEventListener("hashchange", openPathFromHash);
+openPathFromHash();
